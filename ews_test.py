@@ -61,18 +61,32 @@ def create_json_file(sender, subject, time_received, email_size, file_name_count
 
 #### CREATE FOLDER ####
 def create_folders(domains):
-	# create folder processed under Inbox
-	processed_folder = Folder(name='Processed', parent=account.inbox)
-	processed_folder.save()
-	processed_folder.delete()
-    
-    #create all the domain folders from the domain list with the folder name as the domain name.
+
+	# fetch all folders from the inbox and append to a list
+	folders = []
+	for f in account.inbox.walk():
+		folders.append(f.name)
+	print (folders)
+
+	#check if folder Processed is in the inbox. 
+	#If not, create it otherwise return message to console.
+	if not "Processed" in folders:
+		print("Creating Processed Folder")
+		processed_folder = Folder(name='Processed', parent=account.inbox)
+		print(processed_folder)
+		processed_folder.save()
+	else:
+		print("Processed folder already exists.")
+
+	# iterate through domain list and check if the folder with domain as the name already exists in inbox.
+	#If not, create it, otherwise, return message to console.
 	for domain in domains:
-		domain_folder = Folder(name=domain, parent=account.inbox)
-		domain_folder.save()
-		domain_folder.delete()
-
-
+		if not domain in folders:
+			print("Creating "+domain+" Folder")
+			domain_folder = Folder(name=domain, parent=account.inbox)
+			domain_folder.save()
+		else:
+			print(domain+" folder already exists")
 
 
 #### ACCOUNT & CREDENTIALS SETUP
@@ -88,6 +102,7 @@ domains = get_emails(account)
 print (domains)
 #create folder
 create_folders(domains)
+print("hi")
 #print(account.root.tree())
 #temp = account.root / "Top of Information Store"
 #print(temp.tree())
