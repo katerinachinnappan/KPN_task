@@ -4,6 +4,7 @@
 import logging
 import requests
 import http.client as http_client
+import json
 
 # Below enables a ton of debug output for investigation 
 
@@ -20,10 +21,22 @@ BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
 
 #### GET EMAILS FROM INBOX #####
 def get_emails(Account):
+	file_name_counter = 0
 	for email in account.inbox.all():
 		print("Email info")
 		print("sender: ", email.sender.email_address, "received: ", 
 			email.datetime_received, "subject: ", email.subject, "content: ", email.text_body)
+		file = open(email.sender.email_address+str(file_name_counter)+".json", "a+")
+		file.write(json.dumps({"sender": email.sender.email_address, "subject": email.subject}))
+		file.close()
+		file_name_counter = file_name_counter + 1
+	# dummy_json = open("dummy_json.json", "a+")
+	# dummy_json.write(json.dumps({"sender": email.sender.email_address, "received": email.datetime_received, "subject": email.subject}))
+	# dummy_json.close()
+
+
+
+#def create_json_file(Account)
 
 
 
