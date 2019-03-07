@@ -29,16 +29,25 @@ def get_emails(Account):
 			email.datetime_received, "subject: ", email.subject, "content: ", email.text_body)
 		file_name_counter = file_name_counter + 1
 		# create json file for every fetched email 
-		create_json_file(email.sender.email_address, email.subject, file_name_counter)
+		create_json_file(email.sender.email_address, email.subject, str(email.datetime_received), email.size, file_name_counter)
 
 
 
 #### CREATE JSON_FILES FOR EVERY EMAIL ####
-def create_json_file(sender, subject, file_name_counter):
+def create_json_file(sender, subject, time_received, email_size, file_name_counter):
+	#construct email dict object
+	data = {}  
+	data['email_info'] = []  
+	data['email_info'].append({  
+    'sender': sender,
+    'subject': subject,
+    'time received': time_received,
+    'size': email_size
+	})
+
 	file = open(sender+str(file_name_counter)+".json", "a+")
-	file.write(json.dumps({"sender": sender, "subject": subject}))
+	file.write(json.dumps(data))
 	file.close()
-	print(file_name_counter);
 
 
 
