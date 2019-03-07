@@ -19,24 +19,26 @@ from exchangelib import DELEGATE, Account, Credentials, Configuration, ServiceAc
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
 
+
 #### GET EMAILS FROM INBOX #####
 def get_emails(Account):
-	file_name_counter = 0
+	file_name_counter = 0 #counter for file names
 	for email in account.inbox.all():
 		print("Email info")
 		print("sender: ", email.sender.email_address, "received: ", 
 			email.datetime_received, "subject: ", email.subject, "content: ", email.text_body)
-		file = open(email.sender.email_address+str(file_name_counter)+".json", "a+")
-		file.write(json.dumps({"sender": email.sender.email_address, "subject": email.subject}))
-		file.close()
 		file_name_counter = file_name_counter + 1
-	# dummy_json = open("dummy_json.json", "a+")
-	# dummy_json.write(json.dumps({"sender": email.sender.email_address, "received": email.datetime_received, "subject": email.subject}))
-	# dummy_json.close()
+		# create json file for every fetched email 
+		create_json_file(email.sender.email_address, email.subject, file_name_counter)
 
 
 
-#def create_json_file(Account)
+#### CREATE JSON_FILES FOR EVERY EMAIL ####
+def create_json_file(sender, subject, file_name_counter):
+	file = open(sender+str(file_name_counter)+".json", "a+")
+	file.write(json.dumps({"sender": sender, "subject": subject}))
+	file.close()
+	print(file_name_counter);
 
 
 
