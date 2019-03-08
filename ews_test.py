@@ -5,15 +5,16 @@ import logging
 import requests
 import http.client as http_client
 import json
+import collections
 from collections import OrderedDict
 
 # Below enables a ton of debug output for investigation 
 
 http_client.HTTPConnection.debuglevel = 1
 logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
+#logging.getLogger().setLevel(logging.DEBUG)
 requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
+#requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
 from exchangelib import DELEGATE, Account, Credentials, Folder, Configuration, ServiceAccount, IMPERSONATION
@@ -89,6 +90,27 @@ def create_folders(domains):
 			print(domain+" folder already exists")
 
 
+#### COPY EMAIL TO PROCESSED FOLDER ####
+def copy_and_move_emails(domains):
+	# list to store new emails from inbox
+	email_copies = []
+	for email in account.inbox.all():
+		email_copies.append(email)
+
+	# copy emails from list to processed folder
+	processed_folder  = account.inbox / "Processed"
+	for email in email_copies:
+			email.copy(processed_folder)
+
+	#move all emails from inbox to their domain-name folders
+	for email in account.inbox.all():
+		for domain in domains:
+			domain_folder = account.inbox / domain
+			if domain in email.sender.email_address:
+				print(email.sender.email_address)
+				email.move(domain_folder)
+
+
 #### ACCOUNT & CREDENTIALS SETUP
 # If the server doesn't support autodiscover, or you want to avoid the overhead of autodiscover,
 # Account & Credentials set up
@@ -97,15 +119,13 @@ server = 'autodiscover-s.outlook.com'
 config = Configuration(server=server, credentials=credentials)
 account = Account(primary_smtp_address='testtask123@outlook.com', config=config, autodiscover=False, access_type=DELEGATE)
 
-#fetch emails
+#fetch emails & get domains
 domains = get_emails(account)
 print (domains)
-#create folder
+#create folders
 create_folders(domains)
-print("hi")
-#print(account.root.tree())
-#temp = account.root / "Top of Information Store"
-#print(temp.tree())
+#copy email to processed folder, move emails from inbox to respective domain-name folders
+copy_and_move_emails(domains)
 
 
 
