@@ -1,6 +1,6 @@
 import unittest
 import sys
-from ews_test import get_emails
+from ews import get_emails
 from exchangelib import Account, Credentials, Folder
 
 class TestEWS(unittest.TestCase):
