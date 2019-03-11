@@ -38,6 +38,8 @@ def get_emails(account):
 		file_name_counter = file_name_counter + 1
 		# create json file for every fetched email 
 		data = create_json_file(email.sender.email_address, email.subject, str(email.datetime_received), email.size, file_name_counter)
+		#optional to also pass the email content to store in json file however not recommende because the content of the email could be very big.
+		#data = create_json_file(email.sender.email_address, email.subject, str(email.datetime_received), email.size, email.text_body, file_name_counter)
 		#print(data)
 	#remove all duplicate domains from the domains list.
 	domains_no_duplicate = list(OrderedDict.fromkeys(domains))
@@ -130,7 +132,7 @@ def copy_and_move_emails(domains,account):
 	return emails_in_inbox
 
 
-def setUp():
+def start_ews():
 	
 	#fetch emails & get domains
 	domains = get_emails(initial_setup.account)
