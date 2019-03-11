@@ -2,12 +2,11 @@ import unittest
 import sys
 from src import ews, initial_setup
 import json
-#from ews import get_emails
 from exchangelib import Account, Credentials, Folder, Configuration, DELEGATE, ServiceAccount
 
 class TestEWS(unittest.TestCase):
     """
-    Our basic test class
+    Basic Test Class
     """
     def setUp(self):
         self.server = 'autodiscover-s.outlook.com'
@@ -15,7 +14,6 @@ class TestEWS(unittest.TestCase):
         self.config = Configuration(server=self.server, credentials=self.credentials)
         self.account = Account(primary_smtp_address='testtask123@outlook.com', config=self.config, autodiscover=False, access_type=DELEGATE)
         self.contains_domains = ['cisco', 'mail.onedrive', 'microsoft', 'student.vu', 'ucsc', 'yahoo'] #check all domains in inbox before moving to folders
-        #self.contains_domains = []
         self.empty_domains = [] #check that inbox is empty (all emails moved to their respective folders)
         self.expected_output = {'email_info': [{
         'sender': 'abc@xyz.com',
