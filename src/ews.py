@@ -7,6 +7,8 @@ import http.client as http_client
 import json
 import collections
 from collections import OrderedDict
+#from src import initial_setup #when running test_ews.py
+import initial_setup #when starting this script with start.py
 
 # Below enables a ton of debug output for investigation 
 
@@ -23,7 +25,7 @@ BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
 
 
 #### GET EMAILS FROM INBOX #####
-def get_emails(Account):
+def get_emails(account):
 	file_name_counter = 0 #counter for file names
 	start = '@'
 	end = '.'
@@ -35,16 +37,18 @@ def get_emails(Account):
 		domains.append(email.sender.email_address[email.sender.email_address.find(start)+len(start):email.sender.email_address.rfind(end)])
 		file_name_counter = file_name_counter + 1
 		# create json file for every fetched email 
-		#create_json_file(email.sender.email_address, email.subject, str(email.datetime_received), email.size, file_name_counter)
-	#print (domains)
+		data = create_json_file(email.sender.email_address, email.subject, str(email.datetime_received), email.size, file_name_counter)
+		#print(data)
 	#remove all duplicate domains from the domains list.
 	domains_no_duplicate = list(OrderedDict.fromkeys(domains))
+	domains_no_duplicate.sort() #sort in alphabetical order so easy for testing
 	return domains_no_duplicate
 
 
 
 #### CREATE JSON_FILES FOR EVERY EMAIL ####
 def create_json_file(sender, subject, time_received, email_size, file_name_counter):
+	print("creating file: ", sender+str(file_name_counter)+".json")
 	#construct email dict object
 	data = {}  
 	data['email_info'] = []  
@@ -58,10 +62,11 @@ def create_json_file(sender, subject, time_received, email_size, file_name_count
 	file = open(sender+str(file_name_counter)+".json", "a+")
 	file.write(json.dumps(data))
 	file.close()
+	return data
 
 
 #### CREATE FOLDER ####
-def create_folders(domains):
+def create_folders(domains,account):
 
 	# fetch all folders from the inbox and append to a list
 	folders = []
@@ -89,11 +94,20 @@ def create_folders(domains):
 		else:
 			print(domain+" folder already exists")
 
+	for f in account.inbox.walk():
+		folders.append(f.name)
+
+	folders_no_duplicate = list(OrderedDict.fromkeys(folders))
+	folders_no_duplicate.sort()
+
+	return folders_no_duplicate
+
 
 #### COPY EMAIL TO PROCESSED FOLDER ####
-def copy_and_move_emails(domains):
+def copy_and_move_emails(domains,account):
 	# list to store new emails from inbox
 	email_copies = []
+	emails_in_inbox = []
 	for email in account.inbox.all():
 		email_copies.append(email)
 
@@ -110,22 +124,22 @@ def copy_and_move_emails(domains):
 				print(email.sender.email_address)
 				email.move(domain_folder)
 
+	for email in account.inbox.all():
+		emails_in_inbox.append(email)
 
-#### ACCOUNT & CREDENTIALS SETUP
-# If the server doesn't support autodiscover, or you want to avoid the overhead of autodiscover,
-# Account & Credentials set up
-credentials = Credentials(username='testtask123@outlook.com', password='123testtask')
-server = 'autodiscover-s.outlook.com'
-config = Configuration(server=server, credentials=credentials)
-account = Account(primary_smtp_address='testtask123@outlook.com', config=config, autodiscover=False, access_type=DELEGATE)
+	return emails_in_inbox
 
-#fetch emails & get domains
-domains = get_emails(account)
-print (domains)
-#create folders
-create_folders(domains)
-#copy email to processed folder, move emails from inbox to respective domain-name folders
-copy_and_move_emails(domains)
+
+def setUp():
+	
+	#fetch emails & get domains
+	domains = get_emails(initial_setup.account)
+	#create folders
+	folders = create_folders(domains,initial_setup.account)
+	print("folders: ", folders)
+	#copy email to processed folder, move emails from inbox to respective domain-name folders
+	copy_and_move_emails(domains,initial_setup.account)
+	print (domains)
 
 
 
