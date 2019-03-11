@@ -22,14 +22,32 @@ sudo pip3 install requests
 ```
 sudo pip3 install exchangelib
 ```
-### Run Script
+### Start and Run EWS Script
 
 To start and run the script:
+```
+cr src
+```
 
 ```
-python3 ews_test.py
+python3 start.py
+```
+## Run Helper Scripts
+
+To move all emails from processed to inbox:
+```
+python3 move_emails.py
 ```
 
+To delete all created .json files
+```
+python3 delete_json_files.py
+```
+
+To delete all subfolders of inbox and their emails:
+```
+python3 cleanup.py
+```
 ## Running the tests
 
 Explain how to run the automated tests for this system
