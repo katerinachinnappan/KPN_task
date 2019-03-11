@@ -50,7 +50,7 @@ python3 cleanup.py
 ```
 ## Running the tests
 
-Go back to root directory.
+Go back to root directory. Change mock variables defined in setUp as needed.
 Run the unit tests:
 ```
 python3 test_ews.py
