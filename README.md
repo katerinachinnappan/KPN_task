@@ -26,7 +26,7 @@ sudo pip3 install exchangelib
 
 To start and run the script:
 ```
-cr src
+cd src
 ```
 
 ```
@@ -50,16 +50,11 @@ python3 cleanup.py
 ```
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+Go back to root directory.
+Run the unit tests:
 ```
-Give an example
+python3 test_ews.py
 ```
-
 ## Authors
 
 **Katerina Chinnappan** 
